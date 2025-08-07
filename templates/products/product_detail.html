@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - MediCare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'products:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:category_detail' product.category.id %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-lg-6">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% else %}
+            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                <i class="fas fa-pills fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ product.name }}</h2>
+                    <p class="text-muted mb-2">Brand: {{ product.brand }}</p>
+                    <p class="text-muted mb-3">Category: {{ product.category.name }}</p>
+
+                    <!-- Price -->
+                    <div class="mb-3">
+                        {% if product.is_on_sale %}
+                        <div class="d-flex align-items-center">
+                            <span class="price sale-price me-2">${{ product.sale_price }}</span>
+                            <span class="original-price">${{ product.price }}</span>
+                            <span class="badge bg-danger ms-2">-{{ product.discount_percentage }}% OFF</span>
+                        </div>
+                        {% else %}
+                        <span class="price">${{ product.price }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="mb-3">
+                        <span class="badge bg-{% if product.availability == 'in_stock' %}success{% elif product.availability == 'limited' %}warning{% else %}danger{% endif %} fs-6">
+                            {{ product.get_availability_display }}
+                        </span>
+                        {% if product.availability == 'in_stock' %}
+                        <span class="text-muted ms-2">({{ product.stock_quantity }} units available)</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p>{{ product.description }}</p>
+                    </div>
+
+                    <!-- Add to Cart Form -->
+                    {% if product.availability == 'in_stock' %}
+                    <form method="POST" action="{% url 'cart:add_to_cart' product.id %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ product.stock_quantity }}">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        This product is currently out of stock.
+                    </div>
+                    {% endif %}
+
+                    <!-- Product Details -->
+                    {% if product.details %}
+                    <div class="accordion mt-4" id="productDetails">
+                        {% if product.details.dosage %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dosage">
+                                    Dosage Information
+                                </button>
+                            </h2>
+                            <div id="dosage" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                                <div class="accordion-body">
+                                    {{ product.details.dosage|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if product.details.precautions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#precautions">
+                                    Precautions
+                                </button>
+                            </h2>
+                            <div id="precautions" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                                <div class="accordion-body">
+                                    {{ product.details.precautions|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if product.details.side_effects %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sideEffects">
+                                    Side Effects
+                                </button>
+                            </h2>
+                            <div id="sideEffects" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                                <div class="accordion-body">
+                                    {{ product.details.side_effects|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if product.details.ingredients %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ingredients">
+                                    Ingredients
+                                </button>
+                            </h2>
+                            <div id="ingredients" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                                <div class="accordion-body">
+                                    {{ product.details.ingredients|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if product.details.storage_instructions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#storage">
+                                    Storage Instructions
+                                </button>
+                            </h2>
+                            <div id="storage" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                                <div class="accordion-body">
+                                    {{ product.details.storage_instructions|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5">
+        <h3>Related Products</h3>
+        <div class="row g-4">
+            {% for related_product in related_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card product-card h-100">
+                    {% if related_product.is_on_sale %}
+                    <span class="badge badge-sale">-{{ related_product.discount_percentage }}%</span>
+                    {% endif %}
+                    
+                    {% if related_product.image %}
+                    <img src="{{ related_product.image.url }}" class="card-img-top" alt="{{ related_product.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-pills fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title">{{ related_product.name }}</h6>
+                        <p class="card-text text-muted small">{{ related_product.brand }}</p>
+                        
+                        <div class="mt-auto">
+                            {% if related_product.is_on_sale %}
+                            <div class="price sale-price">${{ related_product.sale_price }}</div>
+                            <div class="original-price">${{ related_product.price }}</div>
+                            {% else %}
+                            <div class="price">${{ related_product.price }}</div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="badge bg-{% if related_product.availability == 'in_stock' %}success{% elif related_product.availability == 'limited' %}warning{% else %}danger{% endif %}">
+                                    {{ related_product.get_availability_display }}
+                                </span>
+                                
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'products:product_detail' related_product.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form method="POST" action="{% url 'cart:add_to_cart' related_product.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-sm btn-primary" {% if related_product.availability != 'in_stock' %}disabled{% endif %}>
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

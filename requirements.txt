@@ -1,0 +1,6 @@
+Django==4.2.7
+# mysqlclient==2.2.0  # Install separately when MySQL is set up
+# Pillow==10.0.1  # Install separately if needed for image processing
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+python-decouple==3.8 
