@@ -4,43 +4,82 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 120px 0 80px;">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Your Health, Our Priority</h1>
-                <p class="lead mb-4">Get your medicines and supplements delivered to your doorstep. Fast, reliable, and secure online pharmacy.</p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'products:product_list' %}" class="btn btn-light btn-lg">Shop Now</a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg">Register</a>
+                <h1 class="display-3 fw-bold mb-4 text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    Your Health, <span style="color: #fbbf24;">Our Priority</span>
+                </h1>
+                <p class="lead mb-4 text-white-50" style="font-size: 1.25rem; line-height: 1.8;">
+                    Get your medicines and supplements delivered to your doorstep. Fast, reliable, and secure online pharmacy with 24/7 support.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'products:product_list' %}" class="btn btn-light btn-lg px-4 py-3 fw-semibold" style="border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <i class="fas fa-shopping-cart me-2"></i>Shop Now
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold" style="border-radius: 50px; border-width: 2px;">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                </div>
+                <div class="mt-4 d-flex align-items-center text-white-50">
+                    <div class="d-flex align-items-center me-4">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>Free Delivery</span>
+                    </div>
+                    <div class="d-flex align-items-center me-4">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>24/7 Support</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>Secure Payment</span>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <i class="fas fa-pills" style="font-size: 8rem; opacity: 0.3;"></i>
+                <div class="position-relative">
+                    <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 300px; height: 300px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <i class="fas fa-pills" style="font-size: 8rem; color: #667eea; opacity: 0.8;"></i>
+                    </div>
+                    <div class="position-absolute top-0 start-0 bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; transform: translate(-20px, -20px);">
+                        <i class="fas fa-shipping-fast text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; transform: translate(20px, 20px);">
+                        <i class="fas fa-shield-alt text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Categories Section -->
-<section class="py-5">
+<section class="py-5" style="background: white;">
     <div class="container">
-        <h2 class="text-center mb-5">Shop by Category</h2>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3" style="color: var(--text-primary);">Shop by Category</h2>
+            <p class="lead text-muted">Find the right medicines and supplements for your health needs</p>
+        </div>
         <div class="row g-4">
             {% for category in categories %}
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card text-center h-100">
-                    <div class="card-body">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card product-card text-center h-100 border-0" style="border-radius: 20px; overflow: hidden;">
+                    <div class="card-body p-4">
                         {% if category.image %}
-                        <img src="{{ category.image.url }}" class="card-img-top mb-3" alt="{{ category.name }}" style="height: 120px; object-fit: cover;">
+                        <div class="mb-4" style="height: 120px; overflow: hidden; border-radius: 15px;">
+                            <img src="{{ category.image.url }}" class="w-100 h-100" alt="{{ category.name }}" style="object-fit: cover;">
+                        </div>
                         {% else %}
-                        <div class="bg-light rounded mb-3 d-flex align-items-center justify-content-center" style="height: 120px;">
-                            <i class="fas fa-pills fa-3x text-muted"></i>
+                        <div class="bg-gradient-primary rounded-3 mb-4 d-flex align-items-center justify-content-center" style="height: 120px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));">
+                            <i class="fas fa-pills fa-3x text-white"></i>
                         </div>
                         {% endif %}
-                        <h5 class="card-title">{{ category.name }}</h5>
-                        <p class="card-text text-muted">{{ category.description|truncatewords:10 }}</p>
-                        <a href="{% url 'products:category_detail' category.id %}" class="btn btn-outline-primary">Browse</a>
+                        <h5 class="card-title fw-bold mb-3">{{ category.name }}</h5>
+                        <p class="card-text text-muted mb-4">{{ category.description|truncatewords:12 }}</p>
+                        <a href="{% url 'products:category_detail' category.id %}" class="btn btn-primary w-100" style="border-radius: 50px;">
+                            <i class="fas fa-arrow-right me-2"></i>Browse Products
+                        </a>
                     </div>
                 </div>
             </div>
@@ -51,44 +90,102 @@
 
 <!-- Featured Products Section -->
 {% if featured_products %}
-<section class="py-5 bg-light">
+<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
     <div class="container">
-        <h2 class="text-center mb-5">Featured Products</h2>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3" style="color: var(--text-primary);">Featured Products</h2>
+            <p class="lead text-muted">Handpicked medicines and supplements for your wellness</p>
+        </div>
         <div class="row g-4">
             {% for product in featured_products %}
             <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card product-card h-100">
+                <div class="card product-card h-100 border-0" style="border-radius: 20px; overflow: hidden;">
                     {% if product.is_on_sale %}
-                    <span class="badge badge-sale">-{{ product.discount_percentage }}%</span>
-                    {% endif %}
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
-                    {% else %}
-                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="fas fa-pills fa-3x text-muted"></i>
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="badge bg-danger px-3 py-2" style="border-radius: 20px; font-size: 0.8rem;">
+                            <i class="fas fa-tag me-1"></i>-{{ product.discount_percentage }}%
+                        </span>
                     </div>
                     {% endif %}
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">{{ product.name }}</h6>
-                        <p class="card-text text-muted small">{{ product.brand }}</p>
+                    {% if product.image %}
+                    <a href="{% url 'products:product_detail' product.id %}" class="text-decoration-none">
+                        <div style="height: 200px; overflow: hidden;">
+                            <img src="{{ product.image.url }}" class="w-100 h-100" alt="{{ product.name }}" style="object-fit: cover; transition: transform 0.3s ease;">
+                        </div>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'products:product_detail' product.id %}" class="text-decoration-none">
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-pills fa-3x text-muted"></i>
+                        </div>
+                    </a>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column p-4">
+                        <h6 class="card-title fw-bold mb-2">
+                            <a href="{% url 'products:product_detail' product.id %}" class="text-decoration-none text-dark">{{ product.name }}</a>
+                        </h6>
+                        <p class="card-text text-muted small mb-3">{{ product.brand }}</p>
+                        
+                        <!-- Rating Display -->
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rating me-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.average_rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% elif forloop.counter <= product.average_rating|add:0.5 %}
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">({{ product.review_count }})</small>
+                            </div>
+                        </div>
+                        
                         <div class="mt-auto">
                             {% if product.is_on_sale %}
-                            <div class="price sale-price">${{ product.sale_price }}</div>
-                            <div class="original-price">${{ product.price }}</div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="price sale-price me-2">${{ product.sale_price }}</span>
+                                <span class="original-price">${{ product.price }}</span>
+                            </div>
                             {% else %}
-                            <div class="price">${{ product.price }}</div>
+                            <div class="price mb-3">${{ product.price }}</div>
                             {% endif %}
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="badge bg-{% if product.availability == 'in_stock' %}success{% elif product.availability == 'limited' %}warning{% else %}danger{% endif %}">
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-{% if product.availability == 'in_stock' %}success{% elif product.availability == 'limited' %}warning{% else %}danger{% endif %} px-3 py-2" style="border-radius: 20px;">
+                                    <i class="fas fa-{% if product.availability == 'in_stock' %}check-circle{% elif product.availability == 'limited' %}exclamation-triangle{% else %}times-circle{% endif %} me-1"></i>
                                     {{ product.get_availability_display }}
                                 </span>
-                                <form method="POST" action="{% url 'cart:add_to_cart' product.id %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-sm btn-primary" {% if product.availability != 'in_stock' %}disabled{% endif %}>
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
-                                </form>
+                                
+                                <div class="d-flex gap-2">
+                                    <form method="POST" action="{% url 'cart:add_to_cart' product.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary btn-sm" {% if product.availability != 'in_stock' %}disabled{% endif %} style="border-radius: 50px; width: 40px; height: 40px;">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                    {% if user.is_authenticated %}
+                                        {% if product.id in user_wishlist_products %}
+                                            <form method="POST" action="{% url 'products:remove_from_wishlist' product.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" style="border-radius: 50px; width: 40px; height: 40px;">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <form method="POST" action="{% url 'products:add_to_wishlist' product.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 50px; width: 40px; height: 40px;">
+                                                    <i class="far fa-heart"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -96,39 +193,117 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">View All Products</a>
+        <div class="text-center mt-5">
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg px-5 py-3 fw-semibold" style="border-radius: 50px;">
+                <i class="fas fa-arrow-right me-2"></i>View All Products
+            </a>
         </div>
     </div>
 </section>
 {% endif %}
 
 <!-- Features Section -->
-<section class="py-5">
+<section class="py-5" style="background: white;">
     <div class="container">
-        <h2 class="text-center mb-5">Why Choose MediCare?</h2>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3" style="color: var(--text-primary);">Why Choose MediCare?</h2>
+            <p class="lead text-muted">We're committed to providing the best healthcare experience</p>
+        </div>
         <div class="row g-4">
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <i class="fas fa-shipping-fast fa-3x text-primary"></i>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-shipping-fast fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Fast Delivery</h5>
+                        <p class="text-muted">Get your medicines delivered within 24 hours to your doorstep with real-time tracking.</p>
+                    </div>
                 </div>
-                <h5>Fast Delivery</h5>
-                <p class="text-muted">Get your medicines delivered within 24 hours to your doorstep.</p>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <i class="fas fa-shield-alt fa-3x text-primary"></i>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-shield-alt fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Secure & Safe</h5>
+                        <p class="text-muted">All products are authentic, FDA-approved, and stored under proper conditions.</p>
+                    </div>
                 </div>
-                <h5>Secure & Safe</h5>
-                <p class="text-muted">All products are authentic and stored under proper conditions.</p>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <i class="fas fa-user-md fa-3x text-primary"></i>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-user-md fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Expert Support</h5>
+                        <p class="text-muted">Get professional advice from our qualified pharmacists 24/7 via chat or phone.</p>
+                    </div>
                 </div>
-                <h5>Expert Support</h5>
-                <p class="text-muted">Get professional advice from our qualified pharmacists.</p>
             </div>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-credit-card fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Secure Payment</h5>
+                        <p class="text-muted">Multiple payment options with SSL encryption for your security and convenience.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-undo fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Easy Returns</h5>
+                        <p class="text-muted">30-day return policy for unopened products with hassle-free returns.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="card border-0 h-100" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-mobile-alt fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Mobile App</h5>
+                        <p class="text-muted">Order on-the-go with our mobile app available for iOS and Android.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold text-white mb-4">Ready to Get Started?</h2>
+        <p class="lead text-white-50 mb-4">Join thousands of satisfied customers who trust MediCare for their healthcare needs.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 50px;">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </a>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 50px; border-width: 2px;">
+                <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+            </a>
         </div>
     </div>
 </section>

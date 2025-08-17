@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -67,6 +69,17 @@ class Product(models.Model):
         if self.is_on_sale:
             return int(((self.price - self.sale_price) / self.price) * 100)
         return 0
+    
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return sum(review.rating for review in reviews) / len(reviews)
+        return 0
+    
+    @property
+    def review_count(self):
+        return self.reviews.count()
 
 class ProductDetail(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='details')
@@ -80,4 +93,31 @@ class ProductDetail(models.Model):
     prescription_required = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"Details for {self.product.name}" 
+        return f"Details for {self.product.name}"
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('product', 'user')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username}'s review for {self.product.name}"
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'product')
+        ordering = ['-added_at']
+    
+    def __str__(self):
+        return f"{self.user.username}'s wishlist - {self.product.name}" 

@@ -19,7 +19,7 @@
                         </div>
                         <div class="col-md-6 text-end">
                             <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'shipped' %}info{% elif order.status == 'processing' %}warning{% elif order.status == 'cancelled' %}danger{% else %}secondary{% endif %} fs-6">
-                                {{ order.get_status_display }}
+                                {% if order.status == 'delivered' %}Delivered{% else %}{{ order.get_status_display }}{% endif %}
                             </span>
                         </div>
                     </div>

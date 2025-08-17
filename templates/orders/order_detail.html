@@ -139,50 +139,26 @@
                         <div class="timeline-item">
                             <div class="timeline-marker bg-success"></div>
                             <div class="timeline-content">
-                                <h6 class="mb-1">Order Placed</h6>
+                                <h6 class="mb-1">Order Placed & Delivered</h6>
                                 <small class="text-muted">{{ order.created_at|date:"M j, Y g:i A" }}</small>
                             </div>
                         </div>
                         
-                        {% if order.status != 'pending' %}
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-info"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">Order Confirmed</h6>
-                                <small class="text-muted">{{ order.updated_at|date:"M j, Y g:i A" }}</small>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-warning"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">Processing</h6>
-                                <small class="text-muted">Order is being prepared</small>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if order.status == 'shipped' or order.status == 'delivered' %}
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-info"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">Shipped</h6>
-                                <small class="text-muted">Order is on its way</small>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if order.status == 'delivered' %}
                         <div class="timeline-item">
                             <div class="timeline-marker bg-success"></div>
                             <div class="timeline-content">
-                                <h6 class="mb-1">Delivered</h6>
-                                <small class="text-muted">Order has been delivered</small>
+                                <h6 class="mb-1">Payment Completed</h6>
+                                <small class="text-muted">Payment processed successfully</small>
                             </div>
                         </div>
-                        {% endif %}
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Order Delivered</h6>
+                                <small class="text-muted">Your order has been delivered to your address</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

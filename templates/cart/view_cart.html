@@ -4,21 +4,33 @@
 
 {% block content %}
 <div class="container py-5">
-    <h1 class="mb-4">Shopping Cart</h1>
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Shopping Cart</h1>
+                <p class="lead text-muted">Review your items and proceed to checkout</p>
+            </div>
+        </div>
+    </div>
     
     {% if cart_items %}
     <div class="row">
         <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Cart Items ({{ cart.total_items }})</h5>
+            <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="card-header bg-primary text-white" style="border-radius: 20px 20px 0 0;">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-shopping-cart me-2"></i>Cart Items ({{ cart.total_items }})
+                    </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     {% for item in cart_items %}
-                    <div class="row align-items-center py-3 border-bottom">
+                    <div class="row align-items-center py-4 border-bottom">
                         <div class="col-md-2">
                             {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="img-fluid rounded" alt="{{ item.product.name }}">
+                            <div style="height: 80px; overflow: hidden; border-radius: 10px;">
+                                <img src="{{ item.product.image.url }}" class="w-100 h-100" alt="{{ item.product.name }}" style="object-fit: cover;">
+                            </div>
                             {% else %}
                             <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 80px;">
                                 <i class="fas fa-pills fa-2x text-muted"></i>
@@ -27,17 +39,20 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <h6 class="mb-1">{{ item.product.name }}</h6>
-                            <p class="text-muted small mb-0">{{ item.product.brand }}</p>
-                            <span class="badge bg-{% if item.product.availability == 'in_stock' %}success{% elif item.product.availability == 'limited' %}warning{% else %}danger{% endif %}">
+                            <h6 class="fw-bold mb-1">{{ item.product.name }}</h6>
+                            <p class="text-muted small mb-2">{{ item.product.brand }}</p>
+                            <span class="badge bg-{% if item.product.availability == 'in_stock' %}success{% elif item.product.availability == 'limited' %}warning{% else %}danger{% endif %} px-3 py-2" style="border-radius: 20px;">
+                                <i class="fas fa-{% if item.product.availability == 'in_stock' %}check-circle{% elif item.product.availability == 'limited' %}exclamation-triangle{% else %}times-circle{% endif %} me-1"></i>
                                 {{ item.product.get_availability_display }}
                             </span>
                         </div>
                         
                         <div class="col-md-2">
                             {% if item.product.is_on_sale %}
-                            <div class="price sale-price">${{ item.product.sale_price }}</div>
-                            <div class="original-price">${{ item.product.price }}</div>
+                            <div class="d-flex align-items-center">
+                                <span class="price sale-price me-2">${{ item.product.sale_price }}</span>
+                                <span class="original-price">${{ item.product.price }}</span>
+                            </div>
                             {% else %}
                             <div class="price">${{ item.product.price }}</div>
                             {% endif %}
@@ -46,21 +61,21 @@
                         <div class="col-md-2">
                             <form method="POST" action="{% url 'cart:update_cart_item' item.id %}" class="d-flex align-items-center">
                                 {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm" style="width: 60px;">
-                                <button type="submit" class="btn btn-sm btn-outline-primary ms-2">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm" style="width: 70px; border-radius: 10px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-2" style="border-radius: 50px; width: 35px; height: 35px;" data-loading="true">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             </form>
                         </div>
                         
                         <div class="col-md-2">
-                            <div class="price">${{ item.total_price }}</div>
+                            <div class="price fw-bold">${{ item.total_price }}</div>
                         </div>
                         
                         <div class="col-md-1">
                             <form method="POST" action="{% url 'cart:remove_cart_item' item.id %}" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this item from cart?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius: 50px; width: 35px; height: 35px;" onclick="return confirm('Remove this item from cart?')" data-loading="true">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -68,10 +83,10 @@
                     </div>
                     {% endfor %}
                     
-                    <div class="text-end mt-3">
+                    <div class="text-end mt-4">
                         <form method="POST" action="{% url 'cart:clear_cart' %}" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Clear all items from cart?')">
+                            <button type="submit" class="btn btn-outline-danger fw-semibold" style="border-radius: 50px; padding: 10px 20px;" onclick="return confirm('Clear all items from cart?')" data-loading="true">
                                 <i class="fas fa-trash me-2"></i>Clear Cart
                             </button>
                         </form>
@@ -81,41 +96,45 @@
         </div>
         
         <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Summary</h5>
+            <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="card-header bg-success text-white" style="border-radius: 20px 20px 0 0;">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-receipt me-2"></i>Order Summary
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <span>${{ cart.total_price }}</span>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-semibold">Subtotal:</span>
+                        <span class="fw-bold">${{ cart.total_price }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Shipping:</span>
-                        <span>Free</span>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-semibold">Shipping:</span>
+                        <span class="text-success fw-bold">
+                            <i class="fas fa-check-circle me-1"></i>Free
+                        </span>
                     </div>
                     <hr>
-                    <div class="d-flex justify-content-between mb-3">
-                        <strong>Total:</strong>
-                        <strong class="price">${{ cart.total_price }}</strong>
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong class="fs-5">Total:</strong>
+                        <strong class="price fs-5">${{ cart.total_price }}</strong>
                     </div>
                     
                     {% if user.is_authenticated %}
-                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary w-100">
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary w-100 fw-semibold" style="border-radius: 50px; padding: 12px;">
                         <i class="fas fa-shopping-cart me-2"></i>Proceed to Checkout
                     </a>
                     {% else %}
-                    <div class="alert alert-info">
+                    <div class="alert alert-info" style="border-radius: 15px;">
                         <i class="fas fa-info-circle me-2"></i>
-                        Please <a href="{% url 'accounts:login' %}">login</a> to proceed with checkout.
+                        Please <a href="{% url 'accounts:login' %}" class="alert-link">login</a> to proceed with checkout.
                     </div>
-                    <a href="{% url 'accounts:login' %}" class="btn btn-primary w-100">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary w-100 fw-semibold" style="border-radius: 50px; padding: 12px;">
                         <i class="fas fa-sign-in-alt me-2"></i>Login to Checkout
                     </a>
                     {% endif %}
                     
-                    <div class="text-center mt-3">
-                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary">
+                    <div class="text-center mt-4">
+                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary fw-semibold" style="border-radius: 50px; padding: 10px 20px;">
                             <i class="fas fa-arrow-left me-2"></i>Continue Shopping
                         </a>
                     </div>
@@ -126,10 +145,12 @@
     
     {% else %}
     <div class="text-center py-5">
-        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-        <h3>Your cart is empty</h3>
-        <p class="text-muted">Looks like you haven't added any products to your cart yet.</p>
-        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px;">
+            <i class="fas fa-shopping-cart fa-3x text-muted"></i>
+        </div>
+        <h3 class="fw-bold mb-3" style="color: var(--text-primary);">Your cart is empty</h3>
+        <p class="text-muted mb-4">Looks like you haven't added any products to your cart yet.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg fw-semibold" style="border-radius: 50px; padding: 15px 30px;">
             <i class="fas fa-shopping-bag me-2"></i>Start Shopping
         </a>
     </div>

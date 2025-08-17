@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Subscriptions - MediCare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">
+                    <i class="fas fa-sync-alt me-2"></i>Subscriptions
+                </h1>
+                <p class="lead text-muted">Manage your recurring medication deliveries</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'orders:add_subscription' %}" class="btn btn-primary btn-lg fw-semibold" style="border-radius: 50px; padding: 12px 30px;">
+                <i class="fas fa-plus me-2"></i>Add New Subscription
+            </a>
+        </div>
+    </div>
+
+    {% if subscriptions %}
+    <div class="row">
+        {% for subscription in subscriptions %}
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 20px; overflow: hidden;">
+                <div class="card-header {% if subscription.status == 'active' %}bg-success{% elif subscription.status == 'paused' %}bg-warning{% else %}bg-secondary{% endif %} text-white" style="border-radius: 20px 20px 0 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">{{ subscription.product.name }}</h5>
+                        <div class="d-flex gap-2">
+                            {% if subscription.status == 'active' %}
+                            <span class="badge bg-light text-success px-3 py-2" style="border-radius: 20px;">
+                                <i class="fas fa-check-circle me-1"></i>Active
+                            </span>
+                            {% elif subscription.status == 'paused' %}
+                            <span class="badge bg-light text-warning px-3 py-2" style="border-radius: 20px;">
+                                <i class="fas fa-pause me-1"></i>Paused
+                            </span>
+                            {% else %}
+                            <span class="badge bg-light text-secondary px-3 py-2" style="border-radius: 20px;">
+                                <i class="fas fa-times me-1"></i>Cancelled
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if subscription.product.image %}
+                            <div style="height: 120px; overflow: hidden; border-radius: 15px;">
+                                <img src="{{ subscription.product.image.url }}" class="w-100 h-100" alt="{{ subscription.product.name }}" style="object-fit: cover;">
+                            </div>
+                            {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 120px; border-radius: 15px;">
+                                <i class="fas fa-pills fa-2x text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="fw-bold mb-2">{{ subscription.product.name }}</h6>
+                            <p class="text-muted mb-2">Brand: {{ subscription.product.brand }}</p>
+                            <p class="text-muted mb-3">Quantity: {{ subscription.quantity }}</p>
+                            
+                            <div class="mb-3">
+                                <strong>Schedule:</strong><br>
+                                <span class="badge bg-info px-3 py-2 me-1" style="border-radius: 20px;">
+                                    <i class="fas fa-calendar me-1"></i>{{ subscription.get_frequency_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Start Date:</strong> {{ subscription.start_date|date:"M j, Y" }}
+                                <br><small class="text-muted">({{ subscription.start_date|timesince }} ago)</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Next Delivery:</strong> {{ subscription.next_delivery_date|date:"M j, Y" }}
+                                {% if subscription.days_until_next_delivery > 0 %}
+                                    <br><small class="text-muted">({{ subscription.days_until_next_delivery }} days remaining)</small>
+                                {% else %}
+                                    <br><small class="text-success fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Due for delivery
+                                    </small>
+                                {% endif %}
+                            </div>
+                            
+                            {% if subscription.expiry_date %}
+                            <div class="mb-3">
+                                <strong>Expiry Date:</strong> {{ subscription.expiry_date|date:"M j, Y" }}
+                                {% if subscription.days_until_expiry > 0 %}
+                                    <br><small class="text-muted">({{ subscription.days_until_expiry }} days until expiry)</small>
+                                {% else %}
+                                    <br><small class="text-danger fw-bold">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Expired
+                                    </small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <strong>Payment Method:</strong> 
+                                <span class="badge bg-secondary px-3 py-2" style="border-radius: 20px;">
+                                    <i class="fas fa-credit-card me-1"></i>{{ subscription.payment_method }}
+                                </span>
+                            </div>
+                            
+                            <div class="d-flex gap-2 flex-wrap">
+                                {% if subscription.status == 'active' %}
+                                <form method="POST" action="{% url 'orders:pause_subscription' subscription.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-warning btn-sm fw-semibold" style="border-radius: 50px;" data-loading="true">
+                                        <i class="fas fa-pause me-1"></i>Pause
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'orders:cancel_subscription' subscription.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold" style="border-radius: 50px;"
+                                            onclick="return confirm('Are you sure you want to cancel this subscription?')" data-loading="true">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </button>
+                                </form>
+                                {% elif subscription.status == 'paused' %}
+                                <form method="POST" action="{% url 'orders:resume_subscription' subscription.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm fw-semibold" style="border-radius: 50px;" data-loading="true">
+                                        <i class="fas fa-play me-1"></i>Resume
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                <a href="{% url 'orders:edit_subscription' subscription.id %}" class="btn btn-outline-primary btn-sm fw-semibold" style="border-radius: 50px;">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <a href="{% url 'cart:add_to_cart' subscription.product.id %}" class="btn btn-success btn-sm fw-semibold" style="border-radius: 50px;">
+                                    <i class="fas fa-cart-plus me-1"></i>Order Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px;">
+            <i class="fas fa-sync-alt fa-3x text-muted"></i>
+        </div>
+        <h3 class="fw-bold mb-3" style="color: var(--text-primary);">No Subscriptions</h3>
+        <p class="text-muted mb-4">Set up recurring orders to never run out of your essential medications.</p>
+        <a href="{% url 'orders:add_subscription' %}" class="btn btn-primary btn-lg fw-semibold" style="border-radius: 50px; padding: 15px 30px;">
+            <i class="fas fa-plus me-2"></i>Create Your First Subscription
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist - MediCare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-heart me-2"></i>My Wishlist
+            </h1>
+        </div>
+    </div>
+
+    {% if wishlist_items %}
+    <div class="row">
+        {% for item in wishlist_items %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card product-card h-100">
+                {% if item.product.is_on_sale %}
+                <span class="badge badge-sale">-{{ item.product.discount_percentage }}%</span>
+                {% endif %}
+                
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-pills fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">{{ item.product.name }}</h6>
+                    <p class="card-text text-muted small">{{ item.product.brand }}</p>
+                    <p class="card-text small">{{ item.product.description|truncatewords:15 }}</p>
+                    
+                    <div class="mt-auto">
+                        {% if item.product.is_on_sale %}
+                        <div class="price sale-price">${{ item.product.sale_price }}</div>
+                        <div class="original-price">${{ item.product.price }}</div>
+                        {% else %}
+                        <div class="price">${{ item.product.price }}</div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="badge bg-{% if item.product.availability == 'in_stock' %}success{% elif item.product.availability == 'limited' %}warning{% else %}danger{% endif %}">
+                                {{ item.product.get_availability_display }}
+                            </span>
+                            
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Added {{ item.added_at|date:"M j, Y" }}
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="{% url 'products:product_detail' item.product.id %}" class="btn btn-sm btn-outline-primary flex-fill">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                            <form method="POST" action="{% url 'products:move_to_cart' item.product.id %}" class="d-inline flex-fill">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-primary w-100" {% if item.product.availability != 'in_stock' %}disabled{% endif %}>
+                                    <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </form>
+                            <form method="POST" action="{% url 'products:remove_from_wishlist' item.product.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove from wishlist?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+        <h3>Your Wishlist is Empty</h3>
+        <p class="text-muted">Start adding products to your wishlist for easy access later.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Product - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.name|as_crispy_field }}
+                                {{ form.brand|as_crispy_field }}
+                                {{ form.category|as_crispy_field }}
+                                {{ form.description|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.price|as_crispy_field }}
+                                {{ form.sale_price|as_crispy_field }}
+                                {{ form.stock_quantity|as_crispy_field }}
+                                {{ form.availability|as_crispy_field }}
+                                {{ form.image|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Add Product
+                            </button>
+                            <a href="{% url 'products:admin_product_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Products
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priceField = document.getElementById('id_price');
+    const salePriceField = document.getElementById('id_sale_price');
+    
+    // Auto-calculate sale price when regular price changes
+    priceField.addEventListener('input', function() {
+        const price = parseFloat(this.value) || 0;
+        if (salePriceField.value === '') {
+            salePriceField.value = price.toFixed(2);
+        }
+    });
+    
+    // Validate sale price is not higher than regular price
+    salePriceField.addEventListener('input', function() {
+        const salePrice = parseFloat(this.value) || 0;
+        const regularPrice = parseFloat(priceField.value) || 0;
+        
+        if (salePrice > regularPrice) {
+            this.setCustomValidity('Sale price cannot be higher than regular price');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+});
+</script>
+{% endblock %}

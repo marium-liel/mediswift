@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Medicine Reminder - MediCare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>Add Medicine Reminder
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Reminder
+                            </button>
+                            <a href="{% url 'orders:medicine_reminders' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Reminders
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const frequencySelect = document.getElementById('id_frequency');
+    const customDaysField = document.getElementById('id_custom_days');
+    const customDaysRow = customDaysField.closest('.form-group');
+    
+    function toggleCustomDays() {
+        if (frequencySelect.value === 'custom') {
+            customDaysRow.style.display = 'block';
+        } else {
+            customDaysRow.style.display = 'none';
+        }
+    }
+    
+    frequencySelect.addEventListener('change', toggleCustomDays);
+    toggleCustomDays(); // Initial state
+});
+</script>
+{% endblock %}
